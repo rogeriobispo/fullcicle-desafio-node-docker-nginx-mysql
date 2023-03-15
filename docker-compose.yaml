@@ -2,14 +2,12 @@ version: '3'
 
 services:
   web:
-    depends_on:
-      - db
-      - app
     build:
       context: .
       dockerfile: Dockerfile.web
-    container_name: nginx
+    container_name: web
     image: rogeriobispo/nginx
+    restart: always
     networks:
       - node-network
     ports:
@@ -17,15 +15,18 @@ services:
   app:
     depends_on:
       - db
+      - web
     build:
       context: .
       dockerfile: Dockerfile
+    entrypoint: npm run serve
     container_name: app
     image: rogeriobispo/node
     networks:
       - node-network
     volumes: 
       - .:/app
+      - /app/node_modules
     tty: true
     ports:
       - "3000:3000"
